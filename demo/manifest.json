@@ -1,0 +1,70 @@
+{
+ "routes": [
+  {
+   "id": "nyc-chicago",
+   "title": "New York \u2192 Chicago",
+   "blurb": "Westbound on I-80 and I-90: the afternoon sun ahead, then dusk on the Indiana Toll Road.",
+   "depart": "09:00",
+   "file": "routes/nyc-chicago.json",
+   "miles": 797
+  },
+  {
+   "id": "chicago-denver",
+   "title": "Chicago \u2192 Denver",
+   "blurb": "Across Iowa and Nebraska on I-80, chasing the sunset west for the last hours.",
+   "depart": "07:00",
+   "file": "routes/chicago-denver.json",
+   "miles": 1005
+  },
+  {
+   "id": "la-denver",
+   "title": "Los Angeles \u2192 Denver",
+   "blurb": "Out of LA in the evening, through the Utah canyons at night, into sunrise over the Rockies.",
+   "depart": "18:00",
+   "file": "routes/la-denver.json",
+   "miles": 1017
+  },
+  {
+   "id": "dallas-atlanta",
+   "title": "Dallas \u2192 Atlanta",
+   "blurb": "An early start east on I-20: dawn and the low sun straight ahead across Louisiana.",
+   "depart": "03:00",
+   "file": "routes/dallas-atlanta.json",
+   "miles": 784
+  },
+  {
+   "id": "seattle-sf",
+   "title": "Seattle \u2192 San Francisco",
+   "blurb": "South on I-5: the sun on your right all afternoon, and sunset over the Sacramento Valley.",
+   "depart": "08:00",
+   "file": "routes/seattle-sf.json",
+   "miles": 815
+  }
+ ],
+ "reach": [
+  {
+   "id": "denver",
+   "title": "Denver",
+   "origin": {
+    "name": "Denver, CO",
+    "lat": 39.7392,
+    "lon": -104.9903
+   },
+   "depart": "14:30",
+   "serverMin": 600,
+   "file": "reach/denver.tif"
+  },
+  {
+   "id": "chicago",
+   "title": "Chicago",
+   "origin": {
+    "name": "Chicago, IL",
+    "lat": 41.8781,
+    "lon": -87.6298
+   },
+   "depart": "14:30",
+   "serverMin": 600,
+   "file": "reach/chicago.tif"
+  }
+ ]
+}
