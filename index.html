@@ -88,6 +88,7 @@
   .sky-day .shot, .sky-golden .shot, .sky-sunset .shot { box-shadow: 0 28px 60px -28px rgba(19,33,58,.55), 0 0 0 1px rgba(19,33,58,.08); }
   .shot figcaption { padding: .6rem .9rem; font-size: .85rem; background: rgba(255,255,255,.92); color: var(--ink-soft); }
   figure { margin: 0; }
+  .shot.tall { max-width: 25rem; justify-self: center; } /* the panel alone, near its real size */
 
   /* Where the numbers come from */
   .sources { padding: clamp(4rem, 9vw, 6rem) 0 2rem; }
@@ -169,7 +170,7 @@
       <p>Golden hour, sunset, three stages of twilight and full dark, worked out for each mile at the moment you'd drive it, on that place's own clock. The map colours the road by the light; the panel lists when each change happens and how far in you are.</p>
       <p class="example">Leaving Los Angeles at 6 PM, you're in full dark by Barstow and stay there until first light near Glenwood Springs, 725 miles later.</p>
     </div>
-    <figure class="shot"><img src="img/light.webp" width="2000" height="1250" alt="The Light tab for Los Angeles to Denver: the route on the map coloured from golden hour through night to sunrise, and a strip of the drive's light under the form." loading="lazy"><figcaption>Los Angeles to Denver, the Light tab.</figcaption></figure>
+    <figure class="shot"><img src="img/light.webp" width="2000" height="1250" alt="The Light tab for Los Angeles to Denver: the sun's height through the drive and its ten light periods, beside the route coloured from golden hour through night to sunrise." loading="lazy"><figcaption>Los Angeles to Denver, the Light tab.</figcaption></figure>
   </div>
 </section>
 
@@ -180,7 +181,7 @@
       <p>A low sun close to straight ahead is the glare that hides brake lights and lane lines. Twilight Route finds every stretch where the sun is under 15 degrees and within 25 degrees of your heading, and shows it on the map with the view ahead.</p>
       <p class="example">Leaving Dallas at 5 AM on I-20, the sun sits low in the windshield for 1 hour 11 minutes across Louisiana.</p>
     </div>
-    <figure class="shot"><img src="img/glare.webp" width="2000" height="1250" alt="The Glare tab for Dallas to Atlanta: a stretch of I-20 in Louisiana highlighted where the rising sun is ahead, and a chart of the sun's height and direction." loading="lazy"><figcaption>Dallas to Atlanta at 5 AM, the Glare tab.</figcaption></figure>
+    <figure class="shot tall"><img src="img/glare.webp" width="880" height="1800" alt="The Glare tab for Dallas to Atlanta: a stretch of I-20 in Louisiana highlighted where the rising sun is ahead, and a chart of the sun's height and direction." loading="lazy"><figcaption>Dallas to Atlanta at 5 AM, the Glare tab.</figcaption></figure>
   </div>
 </section>
 
@@ -191,7 +192,7 @@
       <p>Each mile gets a fatality rate for its setting (rural or urban), the kind of road, and whether you drive it in daylight, twilight or dark. The Risk tab adds them up as you go, in micromorts: one-in-a-million chances.</p>
       <p class="example">Chicago to Denver at 7 AM: 4.5 micromorts over 1,004 miles, about a 1 in 223,000 chance. Only 0.21 of it comes after dark, which makes 7 AM the lowest-risk hour of the day to leave.</p>
     </div>
-    <figure class="shot"><img src="img/risk.webp" width="2000" height="1250" alt="The Risk tab for Chicago to Denver: 4.5 micromorts for 1,004 miles, and a chart of the risk adding up mile by mile." loading="lazy"><figcaption>Chicago to Denver, the Risk tab.</figcaption></figure>
+    <figure class="shot tall"><img src="img/risk.webp" width="880" height="1800" alt="The Risk tab for Chicago to Denver: 4.5 micromorts for 1,004 miles, and a chart of the risk adding up mile by mile." loading="lazy"><figcaption>Chicago to Denver, the Risk tab.</figcaption></figure>
   </div>
 </section>
 
@@ -202,7 +203,7 @@
       <p>The same drive, leaving at every hour of the day, side by side: how much of it is after dark, how long the sun is in your eyes, and the risk. Pick a row and the whole plan moves to that time.</p>
       <p class="example">For Chicago to Denver, 7 AM is the best hour of the day. Leaving at 6 PM instead puts most of Nebraska in the dark and the risk at 26 micromorts.</p>
     </div>
-    <figure class="shot"><img src="img/departures.webp" width="2000" height="1250" alt="The Departures tab: one row per departure hour, each with its light, glare and risk." loading="lazy"><figcaption>Chicago to Denver, the Departures tab.</figcaption></figure>
+    <figure class="shot tall"><img src="img/departures.webp" width="880" height="1800" alt="The Departures tab: one row per departure hour, each with its light, glare and risk." loading="lazy"><figcaption>Chicago to Denver, the Departures tab.</figcaption></figure>
   </div>
 </section>
 

@@ -3384,7 +3384,7 @@ async function pickDemoRoute(m) {
     vias = []; renderVias(); syncTrack();
     $('time').value = fmt12(m.depart); showTimeHint(false);
     markDemo();
-    plan(true);
+    run(true); // as the Plan button: the form folds into its summary row
   } catch { setStatus('Couldn\'t load that demo route', true); }
 }
 function pickDemoStart(m) {
@@ -3393,7 +3393,7 @@ function pickDemoStart(m) {
   REACH_MAX_MIN = m.serverMin; showReachMax();
   $('time').value = fmt12(m.depart); showTimeHint(false);
   markDemo();
-  planReach(true);
+  run(true);
 }
 if (DEMO) {
   document.body.classList.add('demo');
