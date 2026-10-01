@@ -5,8 +5,8 @@ your eyes, and the fatality risk mile by mile; and, in Reach, every road you can
 coloured by the light you would arrive in there.
 
 The routes and Reach grids were prebuilt from a self-hosted Valhalla, so the demo needs no server.
-Pick a route or a start, then change the departure date and time: all of the sun and light work
-happens in your browser.
+The landing page is `index.html`; the app itself is in `app/`. Pick a route or a start, then change
+the departure date and time: all of the sun and light work happens in your browser.
 
 Routes:
 - New York → Chicago (797 mi)
