@@ -1945,7 +1945,7 @@ function draw(samples, events, departMs, fit) {
   const fmtMm = x => x >= 10 ? x.toFixed(0) : x >= 1 ? x.toFixed(1) : x.toFixed(2);
   const riskStretches = risk ? riskStretchesOf(risk) : [];
   const riskTip = r => `${riskChip(r.per100)}<b>${fmtMm(r.mm)} micromorts</b> · ${Math.round(r.miles)} mi · ${fmtMm(r.per100)} per 100 mi<br>`
-    + `<span class="sub">mostly ${r.area} ${(roadTypeOf(r.row) || { name: 'road' }).name.toLowerCase()} · ${['daylight', 'twilight', 'dark'][r.band]}${r.late ? ', partly after midnight' : ''}</span>`;
+    + `<span class="sub">mostly ${r.area} ${(roadTypeOf(r.row) || { name: 'road' }).name.toLowerCase()} · ${['daylight', 'civil twilight', 'after civil dusk'][r.band]}${r.late ? ', partly after midnight' : ''}</span>`;
   // Road-type runs; ramp-length blips (< 800 m) are folded into the run before them
   const roadRuns = [];
   if (last?.roads === 'ready') for (let i = 1; i < samples.length; i++) {
@@ -2301,7 +2301,9 @@ function draw(samples, events, departMs, fit) {
   };
   // Risk tab: the trip as a timeline of stretches in driving order, each colored by its rate
   const rowName = k => (roadTypeOf(k) || { name: 'road not described' }).name;
-  const bandName = ['Daylight', 'Twilight', 'Dark'];
+  // The risk model's light classes (as FARS records them): its "dark" starts at civil dusk, not at
+  // full night, so it is named for that, keeping "after dark" for the Night band everywhere else
+  const bandName = ['Daylight', 'Civil twilight', 'After civil dusk'];
   let riskHtml;
   if (risk) {
     const stretches = riskStretches;
@@ -2341,13 +2343,13 @@ function draw(samples, events, departMs, fit) {
     for (let v = 0; v <= xmax; v += xstep) if (xmax - v > xstep * 0.4) svg += `<text x="${X(v)}" y="${H - 6}" text-anchor="${v ? 'middle' : 'start'}">${v}</text>`;
     svg += `<text x="${X(xmax)}" y="${H - 6}" text-anchor="end">${Math.round(xmax)} mi</text>`;
     svg += `<g class="hov" hidden><line class="cross" y1="${T}" y2="${Y(0)}"/><circle r="4"/><rect rx="5" height="18"/><text class="ink"></text></g>`;
-    // What it means: how much comes after dark, and the departure that would cut it (from the comparison)
+    // What it means: how much comes after civil dusk, and the departure that would cut it (from the comparison)
     const takeaway = () => {
       const dark = risk.cells.filter(c => c.band === 2), darkMm = dark.reduce((n, c) => n + c.mm, 0), darkMi = dark.reduce((n, c) => n + c.miles, 0);
       const top = stretches.filter(r => r.band === 2).sort((a, b) => b.mm - a.mm)[0];
-      let s = !darkMm ? '<b>None of this trip is after dark.</b>'
-        : darkMm / total < 0.15 ? `<b>Only ${fmtMm(darkMm)} of the ${fmtMm(total)} come after dark.</b>`
-        : `<b>${fmtMm(darkMm)} of the ${fmtMm(total)} come after dark</b>, over ${Math.round(darkMi)} miles, mostly ${top.area} ${rowName(top.row).toLowerCase()}.`;
+      let s = !darkMm ? '<b>None of this trip is after civil dusk.</b>'
+        : darkMm / total < 0.15 ? `<b>Only ${fmtMm(darkMm)} of the ${fmtMm(total)} come after civil dusk.</b>`
+        : `<b>${fmtMm(darkMm)} of the ${fmtMm(total)} come after civil dusk</b>, over ${Math.round(darkMi)} miles, mostly ${top.area} ${rowName(top.row).toLowerCase()}.`;
       const bestC = bestRisk && cands.find(c => cmpCache.rows.get(c.t).risk === bestRisk);
       if (bestC?.current) s += ' This is the lowest-risk departure of the day.';
       else if (bestC && bestRisk.mm < risk.mm * 0.85) s += ` Leaving at <b>${fmtShort(bestC.t, tz)}</b> (${fmtDurShort(Math.abs(bestC.t - departMs))} ${bestC.t < departMs ? 'earlier' : 'later'}) would cut it to <b>${fmtMm(bestRisk.mm)}</b>: <span class="link" data-tab="Departures">see departures</span>.`;
@@ -2434,7 +2436,7 @@ function draw(samples, events, departMs, fit) {
   const roadsCard = roadsBrief ? card('Roads', ICON.roads, `Roads · ${Math.round(roadsBrief[0].mi / (end.d / M_PER_MI) * 100)}% ${roadsBrief[0].name.toLowerCase()}`, roadsBrief.slice(0, 3).map(r => `${Math.round(r.mi)} mi ${r.name.toLowerCase()}`).join(', '))
     : card('Roads', ICON.roads, 'Roads', last?.roads === 'loading' ? 'Waiting for road details' : 'Road details unavailable', '', last?.roads === 'loading');
   const darkMm = risk ? risk.cells.filter(c => c.band === 2).reduce((n, c) => n + c.mm, 0) : 0;
-  const riskCard = risk ? card('Risk', ICON.risk, `Risk · ${fmtMm(risk.mm)} micromorts`, `${fmtMm(risk.per100)} per 100 mi${darkMm ? ` · ${fmtMm(darkMm)} of the ${fmtMm(risk.mm)} after dark` : ' · none of it after dark'}`)
+  const riskCard = risk ? card('Risk', ICON.risk, `Risk · ${fmtMm(risk.mm)} micromorts`, `${fmtMm(risk.per100)} per 100 mi${darkMm ? ` · ${fmtMm(darkMm)} of the ${fmtMm(risk.mm)} after civil dusk` : ' · none of it after civil dusk'}`)
     : card('Risk', ICON.risk, 'Risk', riskPending ? 'Waiting for road details' : 'Road or setting details unavailable', '', riskPending);
   const depCard = best.current ? card('Departures', ICON.clock, `Departures · this is the ${risk ? 'lowest-risk' : 'least-dark'} hour`, `Every other departure today ${risk ? 'carries more risk' : 'has more driving after dark'}`)
     : card('Departures', ICON.clock, `Departures · best at ${fmtShort(best.t, tz)}`, depAdvice(best));

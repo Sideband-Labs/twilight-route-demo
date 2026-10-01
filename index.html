@@ -5,9 +5,16 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Twilight Route: see the light you'll drive in</title>
 <meta name="description" content="Twilight Route lays a US road trip against the sun: sunset and sunrise along the way, the sun in your eyes, and how the risk changes after dark.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://sideband-labs.github.io/twilight-route-demo/">
 <meta property="og:title" content="Twilight Route: see the light you'll drive in">
 <meta property="og:description" content="Sunset and sunrise along your drive, the sun in your eyes, and the risk after dark. Try five preset drives in your browser.">
-<meta property="og:image" content="img/light.webp">
+<meta property="og:image" content="https://sideband-labs.github.io/twilight-route-demo/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://sideband-labs.github.io/twilight-route-demo/img/og.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Crect width='26' height='26' rx='6' fill='%2313213a'/%3E%3Cpath d='M6.5 17a6.5 6.5 0 0 1 13 0' fill='%23f97316'/%3E%3Cpath d='M3.5 17h19M13 5v3M6 8.5l2 2M20 8.5l-2 2' stroke='%23ffd25e' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,400;0,600;0,800;0,900;1,400&display=swap" rel="stylesheet">
@@ -15,14 +22,15 @@
   /* The page is a drive into the night: each section is the sky at the next stage of dusk.
      The hero's band uses the app's own light colours, so it reads as the product. */
   :root {
-    --day: #d6e9f7; --golden: #f6c46a; --sunset: #ee8a63; --civil: #b84d79; --nautical: #4a3f8e; --astro: #1d2a5c; --night: #070b1d;
+    --day: #d6e9f7; --golden: #f6c46a; --sunset: #ee8a63; --civil: #9e3d66; --nautical: #4a3f8e; --astro: #1d2a5c; --deep: #0f1838; --night: #070b1d;
     --ink: #13213a; --ink-soft: #3a4a63; --paper: #f4f7fb; --paper-soft: #c3cbe0;
-    --band-daylight: #eab308; --band-golden: #f97316; --band-civil: #db2777; --band-nautical: #7c3aed; --band-astro: #1d4ed8; --band-night: #111827;
     --sun: #ffd25e;
-    --measure: 36rem; --wide: 72rem; --gutter: clamp(1rem, 4vw, 2.5rem);
+    --measure: 36rem; --wide: 76rem; --gutter: clamp(1rem, 4vw, 2.5rem);
+    --h2: clamp(1.9rem, 4vw, 2.9rem);
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   body { margin: 0; font: 400 1.0625rem/1.6 Overpass, "Helvetica Neue", Arial, sans-serif; color: var(--ink); background: var(--night); -webkit-font-smoothing: antialiased; }
   img { display: block; max-width: 100%; height: auto; }
   a { color: inherit; }
@@ -30,13 +38,15 @@
 
   .wrap { max-width: var(--wide); margin: 0 auto; padding: 0 var(--gutter); }
   section { position: relative; }
-  /* Each stage of the sky, blending into the next over a short stretch, like the light does */
+  /* Each stage of the sky, blending into the next over a short stretch, like the light does,
+     on through deep night to the end of the page */
   .sky-day      { background: linear-gradient(var(--day) 70%, var(--golden)); }
   .sky-golden   { background: linear-gradient(var(--golden) 75%, var(--sunset)); }
   .sky-sunset   { background: linear-gradient(var(--sunset) 75%, var(--civil)); }
   .sky-civil    { background: linear-gradient(var(--civil) 75%, var(--nautical)); color: var(--paper); }
   .sky-nautical { background: linear-gradient(var(--nautical) 75%, var(--astro)); color: var(--paper); }
-  .sky-astro    { background: linear-gradient(var(--astro) 70%, var(--night)); color: var(--paper); }
+  .sky-astro    { background: linear-gradient(var(--astro) 75%, var(--deep)); color: var(--paper); }
+  .sky-deep     { background: linear-gradient(var(--deep) 60%, var(--night)); color: var(--paper); }
   .sky-night    { background: var(--night); color: var(--paper); }
 
   header.top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.25rem 0; }
@@ -63,55 +73,59 @@
   .ribbon { position: relative; margin-top: 5.6rem; }
   .bar { display: flex; height: clamp(64px, 9vw, 104px); border-radius: 14px; overflow: hidden; box-shadow: 0 18px 40px -18px rgba(19,33,58,.55); }
   .bar span { display: block; height: 100%; transform-origin: left; }
-  .moment { position: absolute; bottom: 100%; transform: translateX(-50%); padding-bottom: .55rem; text-align: center; white-space: nowrap; font-size: .82rem; line-height: 1.25; }
-  .moment::after { content: ''; position: absolute; left: 50%; bottom: 0; width: 1px; height: .45rem; background: currentColor; opacity: .5; }
-  .moment b { display: block; font-weight: 800; font-size: .92rem; }
-  .moment.up { padding-bottom: 2.9rem; } /* a moment close to the one before it sits a row higher */
+  /* A moment: a tick at its exact place on the bar, its label above, nudged inward near the ends */
+  .moment { position: absolute; bottom: 100%; width: 0; }
+  .moment::after { content: ''; position: absolute; left: 0; bottom: 0; width: 1px; height: .45rem; background: currentColor; opacity: .55; }
+  .moment .lab { position: absolute; bottom: .55rem; left: 0; transform: translateX(var(--shift, -50%)); text-align: center; white-space: nowrap; font-size: .82rem; line-height: 1.25; }
+  .moment .lab b { display: block; font-weight: 800; font-size: .92rem; }
+  .moment.up .lab { bottom: 2.9rem; }   /* a moment close to the one before it sits a row higher */
   .moment.up::after { height: 2.8rem; }
-  .ends { display: flex; justify-content: space-between; margin-top: .6rem; font-size: .9rem; color: var(--ink-soft); }
-  .ends b { color: var(--ink); font-weight: 800; }
   .stop { position: absolute; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px rgba(0,0,0,.35); }
-  .verdict { margin: 1.6rem 0 0; font-size: clamp(1.15rem, 2.3vw, 1.45rem); font-weight: 600; max-width: 34ch; line-height: 1.35; }
+  .ends { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .2rem 1rem; margin-top: .6rem; font-size: .9rem; color: var(--ink-soft); }
+  .ends span { white-space: nowrap; }
+  .ends b { color: var(--ink); font-weight: 800; }
+  .key { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; margin: .9rem 0 0; padding: 0; list-style: none; font-size: .85rem; color: var(--ink-soft); }
+  .key li { display: flex; align-items: center; gap: .4rem; white-space: nowrap; }
+  .key i { width: 14px; height: 10px; border-radius: 3px; }
+  .key .dot { width: 10px; height: 10px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px rgba(0,0,0,.35); }
+  .verdict { margin: 1.6rem 0 0; font-size: clamp(1.15rem, 2.3vw, 1.45rem); font-weight: 600; max-width: 38ch; line-height: 1.35; }
+  .verdict + .verdict { margin-top: .5rem; font-weight: 400; color: var(--ink-soft); }
   @media (prefers-reduced-motion: no-preference) {
     .bar span { animation: drive .9s cubic-bezier(.3,.6,.3,1) both; animation-delay: calc(var(--i) * 70ms); }
     @keyframes drive { from { transform: scaleX(0); } to { transform: scaleX(1); } }
   }
 
-  /* Feature rows: text and a real screenshot, alternating sides */
-  .feature { padding: clamp(4rem, 9vw, 7rem) 0; }
-  .feature .wrap { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(2rem, 5vw, 4.5rem); align-items: center; }
+  /* Feature rows: text and a real screenshot, alternating sides; every screenshot is the app at
+     840x700 (the panel with the map beside it), shown about 700 px wide */
+  .feature { padding: clamp(3.5rem, 8vw, 6rem) 0; }
+  .feature .wrap { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: clamp(2rem, 5vw, 4rem); align-items: center; }
+  .feature.flip .wrap { grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); }
   .feature.flip .copy { order: 2; }
-  .feature h2 { font-weight: 900; font-size: clamp(1.9rem, 4vw, 2.9rem); line-height: 1.04; letter-spacing: -.025em; margin: 0 0 1rem; }
+  h2.title { font-weight: 900; font-size: var(--h2); line-height: 1.04; letter-spacing: -.025em; margin: 0 0 1rem; }
   .feature p { margin: 0 0 1rem; max-width: var(--measure); }
-  .feature .example { font-size: .98rem; padding-left: 1rem; border-left: 3px solid currentColor; opacity: .92; }
-  .shot { border-radius: 12px; overflow: hidden; box-shadow: 0 28px 60px -28px rgba(7,11,29,.7), 0 0 0 1px rgba(255,255,255,.12); background: #fff; }
-  .sky-day .shot, .sky-golden .shot, .sky-sunset .shot { box-shadow: 0 28px 60px -28px rgba(19,33,58,.55), 0 0 0 1px rgba(19,33,58,.08); }
-  .shot figcaption { padding: .6rem .9rem; font-size: .85rem; background: rgba(255,255,255,.92); color: var(--ink-soft); }
+  .feature .example { font-size: .98rem; padding-left: 1rem; border-left: 3px solid currentColor; }
   figure { margin: 0; }
-  .shot.tall { max-width: 25rem; justify-self: center; } /* the panel alone, near its real size */
+  .shot { border-radius: 12px; overflow: hidden; background: rgba(255,255,255,.14); box-shadow: 0 28px 60px -28px rgba(7,11,29,.7), 0 0 0 1px rgba(255,255,255,.12); }
+  .sky-day .shot, .sky-golden .shot, .sky-sunset .shot { box-shadow: 0 28px 60px -28px rgba(19,33,58,.55), 0 0 0 1px rgba(19,33,58,.08); }
+  .shot img { aspect-ratio: 1680 / 1400; width: 100%; }
+  .shot figcaption { padding: .6rem .9rem; font-size: .85rem; background: rgba(255,255,255,.94); color: var(--ink-soft); }
 
   /* Where the numbers come from */
-  .sources { padding: clamp(4rem, 9vw, 6rem) 0 2rem; }
-  .sources h2 { font-weight: 900; font-size: clamp(1.9rem, 4vw, 2.9rem); line-height: 1.04; letter-spacing: -.025em; margin: 0 0 2rem; max-width: 18ch; }
+  .sources { padding: clamp(4rem, 9vw, 6rem) 0 3rem; }
+  .sources h2.title { margin-bottom: 2rem; max-width: 18ch; }
   .sources dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 2rem 2.5rem; margin: 0; }
   .sources dt { font-weight: 800; font-size: 1.1rem; margin-bottom: .4rem; }
   .sources dd { margin: 0; color: var(--paper-soft); }
 
-  .classic { padding: 3rem 0 1rem; }
-  .classic .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2.5rem; align-items: center; }
-  .classic h2 { font-weight: 800; font-size: 1.5rem; margin: 0 0 .6rem; }
-  .classic p { margin: 0; color: var(--paper-soft); max-width: 30rem; }
-  .classic .shot { box-shadow: 0 0 0 1px rgba(255,255,255,.15); }
-
   /* Night: the call to the demo, with the stars out */
-  .finale { padding: clamp(5rem, 11vw, 8rem) 0 clamp(4rem, 8vw, 6rem); text-align: left; overflow: hidden; }
+  .finale { padding: clamp(5rem, 11vw, 8rem) 0 clamp(4rem, 8vw, 6rem); overflow: hidden; }
   .finale::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .8;
     background-image: radial-gradient(1px 1px at 12% 22%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 31% 64%, #cfd7ff 50%, transparent 51%),
       radial-gradient(1.5px 1.5px at 52% 18%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 68% 48%, #fff 50%, transparent 51%),
       radial-gradient(1px 1px at 83% 26%, #cfd7ff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 91% 72%, #fff 50%, transparent 51%),
       radial-gradient(1px 1px at 22% 84%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 44% 40%, #cfd7ff 50%, transparent 51%),
       radial-gradient(1px 1px at 76% 88%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 6% 52%, #fff 50%, transparent 51%); }
-  .finale h2 { font-weight: 900; font-size: clamp(2.3rem, 6vw, 4.2rem); line-height: 1; letter-spacing: -.03em; margin: 0; max-width: 14ch; }
+  .finale h2.title { font-size: clamp(2.3rem, 6vw, 4.2rem); line-height: 1; max-width: 14ch; margin: 0; }
   .finale p { max-width: var(--measure); color: var(--paper-soft); margin: 1.2rem 0 0; font-size: 1.15rem; }
   .finale .routes { list-style: none; padding: 0; margin: 1.6rem 0 0; display: flex; flex-wrap: wrap; gap: .5rem; }
   .finale .routes li { padding: .4rem .85rem; border-radius: 999px; border: 1px solid rgba(255,255,255,.22); font-size: .95rem; }
@@ -122,11 +136,11 @@
   footer p { margin: 0; }
 
   @media (max-width: 800px) {
-    .feature .wrap, .classic .wrap { grid-template-columns: 1fr; }
+    .feature .wrap, .feature.flip .wrap { grid-template-columns: 1fr; }
     .feature.flip .copy { order: 0; }
     .ribbon { margin-top: 3.4rem; }
-    .moment.up { padding-bottom: .55rem; } .moment.up::after { height: .45rem; }
     .moment.minor { display: none; }
+    .moment.up .lab { bottom: .55rem; } .moment.up::after { height: .45rem; }
   }
 </style>
 </head>
@@ -147,7 +161,7 @@
       <p class="lede">Twilight Route lays a US road trip against the sun: when it sets and rises along your way, when it sits low in your eyes, and how much riskier the miles get after dark. Then it helps you pick a better time to leave.</p>
       <div class="ctas">
         <a class="btn" href="app/"><svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 14h14M4.5 14a4.5 4.5 0 0 1 9 0"/><path d="M9 3v2.2M3.6 6.2l1.5 1.4M14.4 6.2l-1.5 1.4"/></svg>Open the live demo</a>
-        <small>Five preset drives, no sign-up. It runs in your browser.</small>
+        <small>Five preset drives you can re-time as you like. No sign-up; it runs in your browser.</small>
       </div>
 
       <div class="drive" id="drive" hidden>
@@ -157,7 +171,9 @@
         </div>
         <div class="ribbon" id="ribbon"><div class="bar" id="bar" role="img"></div></div>
         <div class="ends" id="ends"></div>
+        <ul class="key" id="key" aria-label="Key"></ul>
         <p class="verdict" id="verdict"></p>
+        <p class="verdict" id="riskLine"></p>
       </div>
     </div>
   </div>
@@ -166,61 +182,61 @@
 <section class="feature sky-golden">
   <div class="wrap">
     <div class="copy">
-      <h2>Every stage of dusk and dawn, on your route.</h2>
-      <p>Golden hour, sunset, three stages of twilight and full dark, worked out for each mile at the moment you'd drive it, on that place's own clock. The map colours the road by the light; the panel lists when each change happens and how far in you are.</p>
-      <p class="example">Leaving Los Angeles at 6 PM, you're in full dark by Barstow and stay there until first light near Glenwood Springs, 725 miles later.</p>
+      <h2 class="title">Every stage of dusk and dawn, on your route.</h2>
+      <p>Golden hour and sunset, then the three stages of twilight as the sky dims: civil (the last useful daylight), nautical (the horizon fades) and astronomical (the last glow), and then night. Each is worked out for every mile at the moment you'd drive it, on that place's own clock, and drawn on the road.</p>
+      <p class="example">Seattle to San Francisco at 8 AM: 9h 50m of daylight, sunset at 6:30 PM near mile 742, then an hour of twilight before you arrive.</p>
     </div>
-    <figure class="shot"><img src="img/light.webp" width="2000" height="1250" alt="The Light tab for Los Angeles to Denver: the sun's height through the drive and its ten light periods, beside the route coloured from golden hour through night to sunrise." loading="lazy"><figcaption>Los Angeles to Denver, the Light tab.</figcaption></figure>
+    <figure class="shot"><img src="img/light.webp" width="1680" height="1400" alt="The Light tab for Seattle to San Francisco at 8 AM: 1h 00m in twilight, 9h 50m in daylight, a chart of the sun's height through the drive, sunset at 6:30 PM near mile 742, and the route on the map turning from daylight to twilight near San Francisco." loading="lazy"><figcaption>Seattle to San Francisco at 8 AM, the Light tab.</figcaption></figure>
   </div>
 </section>
 
 <section class="feature flip sky-sunset">
   <div class="wrap">
     <div class="copy">
-      <h2>Know when the sun is in your eyes.</h2>
-      <p>A low sun close to straight ahead is the glare that hides brake lights and lane lines. Twilight Route finds every stretch where the sun is under 15 degrees and within 25 degrees of your heading, and shows it on the map with the view ahead.</p>
-      <p class="example">Leaving Dallas at 5 AM on I-20, the sun sits low in the windshield for 1 hour 11 minutes across Louisiana.</p>
+      <h2 class="title">Know when the sun is in your eyes.</h2>
+      <p>A low sun close to straight ahead is the glare that hides brake lights and lane lines. Twilight Route finds every stretch where the sun is under 15° and within 25° of your heading, highlights it on the map, and shows where the sun sits in the view ahead.</p>
+      <p class="example">Dallas to Atlanta at 5 AM: on I-20 the sun sits low in the windshield for 1h 11m, from Shreveport toward Monroe.</p>
     </div>
-    <figure class="shot tall"><img src="img/glare.webp" width="800" height="1752" alt="The Glare tab for Dallas to Atlanta: a stretch of I-20 in Louisiana highlighted where the rising sun is ahead, and a chart of the sun's height and direction." loading="lazy"><figcaption>Dallas to Atlanta at 5 AM, the Glare tab.</figcaption></figure>
+    <figure class="shot"><img src="img/glare.webp" width="1680" height="1400" alt="The Glare tab for Dallas to Atlanta at 5 AM: 1h 11m with the sun in your eyes, the view ahead with the low sun inside the glare box, the stretch from 7:19 to 8:30 AM at miles 189 to 283, and the map highlighting I-20 from Shreveport past Ruston toward Monroe." loading="lazy"><figcaption>Dallas to Atlanta at 5 AM, the Glare tab.</figcaption></figure>
   </div>
 </section>
 
 <section class="feature sky-civil">
   <div class="wrap">
     <div class="copy">
-      <h2>See what the dark adds to the risk.</h2>
-      <p>Each mile gets a fatality rate for its setting (rural or urban), the kind of road, and whether you drive it in daylight, twilight or dark. The Risk tab adds them up as you go, in micromorts: one-in-a-million chances.</p>
-      <p class="example">Chicago to Denver at 7 AM: 4.5 micromorts over 1,004 miles, about a 1 in 223,000 chance. Only 0.21 of it comes after dark, which makes 7 AM the lowest-risk hour of the day to leave.</p>
+      <h2 class="title">See what the dark adds to the risk.</h2>
+      <p>Each mile gets a fatality rate for its setting (rural or urban), the kind of road, and whether you drive it in daylight, civil twilight or after civil dusk. The Risk tab adds them up as you go, in micromorts: one-in-a-million chances of dying. For scale, US driving as a whole averages about 1.3 per 100 miles.</p>
+      <p class="example">Chicago to Denver at 7 AM: 4.5 micromorts over 1,004 miles, about 1 in 223,000. Only 0.21 of it comes after civil dusk, on the last miles into Denver.</p>
     </div>
-    <figure class="shot tall"><img src="img/risk.webp" width="800" height="1752" alt="The Risk tab for Chicago to Denver: 4.5 micromorts for 1,004 miles, and a chart of the risk adding up mile by mile." loading="lazy"><figcaption>Chicago to Denver, the Risk tab.</figcaption></figure>
+    <figure class="shot"><img src="img/risk.webp" width="1680" height="1400" alt="The Risk tab for Chicago to Denver at 7 AM: 4.5 micromorts for 1004 miles, a chart of the risk adding up mile by mile, the note that only 0.21 of it comes after civil dusk, and the route on the map coloured by its risk." loading="lazy"><figcaption>Chicago to Denver at 7 AM, the Risk tab.</figcaption></figure>
   </div>
 </section>
 
 <section class="feature flip sky-nautical">
   <div class="wrap">
     <div class="copy">
-      <h2>Find a better hour to leave.</h2>
-      <p>The same drive, leaving at every hour of the day, side by side: how much of it is after dark, how long the sun is in your eyes, and the risk. Pick a row and the whole plan moves to that time.</p>
-      <p class="example">For Chicago to Denver, 7 AM is the best hour of the day. Leaving at 6 PM instead puts most of Nebraska in the dark and the risk at 26 micromorts.</p>
+      <h2 class="title">Find a better hour to leave.</h2>
+      <p>The same drive, leaving at every hour of the day, side by side: when you'd arrive, how long you'd spend in twilight and in night, and the risk. Pick a row and the whole plan moves to that time.</p>
+      <p class="example">The Los Angeles to Denver drive at the top of this page: 6 PM is the worst hour of the day, at 23 micromorts. Leaving at 6 AM cuts it to 5.6, with only 12 minutes after dark.</p>
     </div>
-    <figure class="shot tall"><img src="img/departures.webp" width="800" height="1752" alt="The Departures tab: one row per departure hour, each with its light, glare and risk." loading="lazy"><figcaption>Chicago to Denver, the Departures tab.</figcaption></figure>
+    <figure class="shot"><img src="img/departures.webp" width="1680" height="1400" alt="The Departures tab for Los Angeles to Denver: 6:00 AM is the best hour to leave, at 5.6 micromorts with 0h 12m after dark, the worst is 6:00 PM at 23, and a table of every departure hour with its arrival, light, twilight, night and risk." loading="lazy"><figcaption>Los Angeles to Denver, the Departures tab.</figcaption></figure>
   </div>
 </section>
 
 <section class="feature sky-astro">
   <div class="wrap">
     <div class="copy">
-      <h2>Everywhere you can get before dark.</h2>
-      <p>Reach turns it around: from a start and a time, every road you could drive to, coloured by the light you'd arrive in there. Ask for a number of hours, or for everywhere you can get before full dark falls.</p>
-      <p class="example">From Denver at 2 PM, roads up to about 265 miles out are reached in daylight; beyond that, the colour shows the stage of dusk you'd arrive in.</p>
+      <h2 class="title">Everywhere you can get before dark.</h2>
+      <p>Reach turns it around: from a start and a time, every road you could drive to, coloured by the light you'd arrive in there. Ask for a number of hours, or for everywhere you can get before full dark falls, and change the hour with one tap.</p>
+      <p class="example">Denver at 2 PM: roads up to about 265 miles out are reached in daylight; beyond that, the colour shows the stage of dusk you'd arrive in.</p>
     </div>
-    <figure class="shot"><img src="img/reach.webp" width="2000" height="1250" alt="Reach from Denver until nightfall: the road network around Denver coloured from daylight near the city through golden hour and twilight at the edges." loading="lazy"><figcaption>Reach from Denver at 2 PM, until nightfall.</figcaption></figure>
+    <figure class="shot"><img src="img/reach.webp" width="1680" height="1400" alt="Reach from Denver at 2 PM until nightfall: the departure hours, the bands from daylight (roads up to 265 miles out) through astronomical twilight, and the road network around Denver coloured from daylight near the city to twilight at the edges." loading="lazy"><figcaption>Denver at 2 PM, Reach until nightfall.</figcaption></figure>
   </div>
 </section>
 
-<section class="sources sky-night">
+<section class="sources sky-deep">
   <div class="wrap">
-    <h2>Real roads, real sun, real numbers.</h2>
+    <h2 class="title">Real roads, real sun, real numbers.</h2>
     <dl>
       <div><dt>Roads and timing</dt><dd>Routes on OpenStreetMap, from a self-hosted Valhalla router, timed at each road's posted limit (with your own allowance over it on freeways).</dd></div>
       <div><dt>The sun, place by place</dt><dd>Sun height and direction for every point along the drive at the time you'd be there, in that place's time zone.</dd></div>
@@ -229,19 +245,19 @@
   </div>
 </section>
 
-<section class="classic sky-night">
+<section class="feature sky-night">
   <div class="wrap">
-    <figure class="shot"><img src="img/classic.webp" width="2000" height="1250" alt="Twilight Route in the Classic theme: a 1990s desktop window over a retro-styled street map." loading="lazy"></figure>
-    <div>
-      <h2>Also in Classic.</h2>
+    <div class="copy">
+      <h2 class="title">Also in Classic.</h2>
       <p>One switch turns the whole app into a mid-90s desktop: window chrome, a recoloured street map, and the same light underneath.</p>
     </div>
+    <figure class="shot"><img src="img/classic.webp" width="1680" height="1400" alt="Twilight Route in the Classic theme: Chicago to Denver at 7 AM in a 1990s desktop window, with the trip's light strip and overview cards, over a retro-styled street map." loading="lazy"><figcaption>Chicago to Denver at 7 AM, in the Classic theme.</figcaption></figure>
   </div>
 </section>
 
 <section class="finale sky-night">
   <div class="wrap">
-    <h2>Try it on a real drive.</h2>
+    <h2 class="title">Try it on a real drive.</h2>
     <p>Pick one of five long drives, then move the departure around and watch the light, the glare and the risk follow.</p>
     <ul class="routes" aria-label="Demo drives">
       <li>New York to Chicago</li><li>Chicago to Denver</li><li>Los Angeles to Denver</li><li>Dallas to Atlanta</li><li>Seattle to San Francisco</li>
@@ -252,14 +268,15 @@
 
 <footer class="sky-night">
   <div class="wrap">
-    <p>Twilight Route, a Sideband Labs project.</p>
+    <p>Twilight Route, a <a href="https://github.com/Sideband-Labs">Sideband Labs</a> project.</p>
     <p>Map tiles © Esri. Road data © OpenStreetMap contributors. Urban areas: USDOT BTS. Sun positions: SunCalc.</p>
   </div>
 </footer>
 
 <script>
 // The hero's drive, captured from the app itself (demo/landing/capture.py): the light by driving
-// time, from lightMix(), and the moments it changes, from the app's events.
+// time, from lightMix(), the moments it changes, from the app's events, and its risk at this hour
+// and at the day's best hour, from riskFor().
 const STRIP = {
  "from": "Los Angeles",
  "to": "Denver",
@@ -385,38 +402,54 @@ const STRIP = {
    "mile": 677,
    "drive": 29311148.149159446
   }
- ]
+ ],
+ "risk": {
+  "mm": 23.349262808072993,
+  "best": {
+   "clock": "6:00 AM PDT",
+   "mm": 5.588973185429626
+  }
+ }
 };
 (function () {
   if (!STRIP) return;
   const total = STRIP.runs.reduce((a, r) => a + r.ms, 0), pct = ms => (ms / total * 100).toFixed(3) + '%';
-  const hm = ms => { const m = Math.round(ms / 60000); return `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, '0')} m`; };
+  const hm = ms => { const m = Math.round(ms / 60000); return `${Math.floor(m / 60)}h ${String(m % 60).padStart(2, '0')}m`; }; // as the app writes it
+  const mm = x => x >= 10 ? x.toFixed(0) : x.toFixed(1), noZone = c => c.replace(/ [A-Z]{3,4}$/, '');
   const date = new Date(STRIP.date + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-  document.getElementById('driveTitle').textContent = `${STRIP.from} to ${STRIP.to}, leaving at ${STRIP.depart.replace(/ [A-Z]{3,4}$/, '')}`;
-  document.getElementById('driveSub').textContent = `${STRIP.miles.toLocaleString()} miles on ${date}, as Twilight Route plans it`;
+  document.getElementById('driveTitle').textContent = `${STRIP.from} to ${STRIP.to}, leaving at ${noZone(STRIP.depart)}`;
+  document.getElementById('driveSub').textContent = `${STRIP.miles.toLocaleString()} miles, as Twilight Route plans it for ${date}`;
   const bar = document.getElementById('bar');
   bar.innerHTML = STRIP.runs.map((r, i) => `<span style="flex:${r.ms};background:${r.color};--i:${i}" title="${r.band}: ${hm(r.ms)}"></span>`).join('');
-  const dark = STRIP.runs.filter(r => r.band === 'Night').reduce((a, r) => a + r.ms, 0);
   bar.setAttribute('aria-label', `The drive's light from start to finish: ${STRIP.runs.map(r => `${r.band.toLowerCase()} for ${hm(r.ms)}`).join(', ')}.`);
-  // The moments worth naming, above the bar: sunset, full dark, dawn and sunrise (the rest are in the app)
+  // The moments worth naming. On phones Sunset and Sunrise give way to Full dark and First light,
+  // which the verdict is about.
   const show = { 'Sunset': 'Sunset', 'Astronomical dusk (full dark)': 'Full dark', 'Astronomical dawn': 'First light', 'Sunrise': 'Sunrise' };
+  const minor = { 'Sunset': true, 'Sunrise': true };
   const ribbon = document.getElementById('ribbon');
-  // Close moments (sunset and full dark are 104 miles apart here) alternate between two heights
   let prev = -1, up = false;
-  STRIP.events.filter(e => show[e.name]).forEach((e, i) => {
-    const el = document.createElement('div');
-    up = prev >= 0 && (e.drive - prev) / total < .12 ? !up : false;
+  STRIP.events.filter(e => show[e.name]).forEach(e => {
+    const el = document.createElement('div'), f = e.drive / total;
+    up = prev >= 0 && (e.drive - prev) / total < .12 ? !up : false;   // close moments alternate between two heights
     prev = e.drive;
-    el.className = 'moment' + (up ? ' up' : '') + (i === 1 || i === 2 ? ' minor' : '');
+    el.className = 'moment' + (up ? ' up' : '') + (minor[e.name] ? ' minor' : '');
     el.style.left = pct(e.drive);
-    if (e.drive / total < .08) el.style.transform = 'translateX(-15%)';
-    if (e.drive / total > .92) el.style.transform = 'translateX(-85%)';
-    el.innerHTML = `<b>${show[e.name]}</b>${e.clock.replace(/ [A-Z]{3,4}$/, '')}, mile ${e.mile}`;
+    if (f < .08) el.style.setProperty('--shift', '-12%');   // near the ends only the label moves inward;
+    if (f > .92) el.style.setProperty('--shift', '-88%');   // the tick stays at the moment
+    el.innerHTML = `<span class="lab"><b>${show[e.name]}</b>${noZone(e.clock)}, mile ${e.mile}</span>`;
     ribbon.appendChild(el);
   });
   STRIP.stops.forEach(s => { const d = document.createElement('i'); d.className = 'stop'; d.style.left = pct(s.drive); d.title = `Stop at mile ${s.mile}`; ribbon.appendChild(d); });
   document.getElementById('ends').innerHTML = `<span>Leave <b>${STRIP.from}</b> ${STRIP.depart}</span><span>Arrive <b>${STRIP.to}</b> ${STRIP.arrive}</span>`;
-  document.getElementById('verdict').textContent = `${hm(dark)} of the ${hm(total)} behind the wheel are in full dark.`;
+  // Key: the bands this drive passes through, in the order of the evening, and its stops
+  const seen = [];
+  STRIP.runs.forEach(r => { if (!seen.some(x => x.band === r.band)) seen.push(r); });
+  document.getElementById('key').innerHTML = seen.map(r => `<li><i style="background:${r.color}"></i>${r.band}</li>`).join('')
+    + (STRIP.stops.length ? `<li><span class="dot"></span>20-minute stop</li>` : '');
+  const dark = STRIP.runs.filter(r => r.band === 'Night').reduce((a, r) => a + r.ms, 0);
+  document.getElementById('verdict').textContent = `${hm(dark)} of the ${hm(total)} behind the wheel are after dark.`;
+  if (STRIP.risk) document.getElementById('riskLine').textContent =
+    `That makes it ${mm(STRIP.risk.mm)} micromorts of risk. Leaving at ${noZone(STRIP.risk.best.clock)} instead: ${mm(STRIP.risk.best.mm)}.`;
   document.getElementById('drive').hidden = false;
 })();
 </script>
