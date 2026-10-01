@@ -43,6 +43,18 @@
  ],
  "reach": [
   {
+   "id": "los-angeles",
+   "title": "Los Angeles",
+   "origin": {
+    "name": "Los Angeles, CA",
+    "lat": 34.0522,
+    "lon": -118.2437
+   },
+   "depart": "18:00",
+   "serverMin": 600,
+   "file": "reach/los-angeles.tif"
+  },
+  {
    "id": "denver",
    "title": "Denver",
    "origin": {
